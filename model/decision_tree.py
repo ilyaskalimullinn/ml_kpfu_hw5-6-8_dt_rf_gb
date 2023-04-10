@@ -1,4 +1,3 @@
-import abc
 from abc import abstractmethod, ABC
 from typing import Union
 
@@ -68,15 +67,26 @@ class DT(ABC):
     def __calc_metrics(targets: np.ndarray, *args, **kwargs) -> float:
         pass
 
-    def __inf_gain(self, targets_left, targets_right, metric, N):
+    def __inf_gain(self, targets_left: np.ndarray, targets_right: np.ndarray, parent_metric: Union[float, None] = None,
+                   N: Union[int, None] = None):
         """
-        :param targets_left: targets для элементов попавших в левый узел
-        :param targets_right: targets для элементов попавших в правый узел
-        :param N: количество элементов, дошедших до узла родителя
-        :return: information gain, энтропия для левого узла, энтропия для правого узла
-        ТУТ ТОЖЕ НЕ ЦИКЛОВ, используйте собственную фунцию self.__disp
+        :param targets_left: targets for elements that went to left node
+        :param targets_right: targets for elements that went to right node
+        :param parent_metric: metric value for parent node
+        :param N: number of elements that made it to the parent node
+        :return: information gain, metric for left node, metric for right node
         """
-        pass
+        if parent_metric is None:
+            parent_metric = self.__calc_metrics(np.vstack(targets_left, targets_right))
+        if N is None:
+            N = targets_left.shape[0] + targets_right.shape[0]
+
+        metric_left = self.__calc_metrics(targets_left)
+        metric_right = self.__calc_metrics(targets_right)
+
+        expected_metric = (targets_left.shape[0] / N) * metric_left + (targets_right.shape[0] / N) * metric_right
+
+        return parent_metric - expected_metric, metric_left, metric_right
 
     def __build_splitting_node(self, inputs, targets, metric, N):
         pass
