@@ -56,6 +56,9 @@ class BaseDataset(ABC):
         self.stds = self.inputs_train.std(axis=0)
         self.stds[self.stds == 0] = 1
 
+    def no_preprocess(self):
+        pass
+
     def standardization(self):
         # standardization method (use stats from __get_data_stats)
         self.inputs_test = (self.inputs_test - self.means) / self.stds
