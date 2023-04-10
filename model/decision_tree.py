@@ -24,8 +24,8 @@ class DT(ABC):
 
     def train(self, inputs, targets):
         metric = self.__calc_metrics(targets)
-        self.__nb_dim = inputs.shape[1]
-        self.__all_dim = np.arange(self.__nb_dim)
+        self.D = inputs.shape[1]
+        self.__all_dim = np.arange(self.D)
 
         self.__get_axis, self.__get_threshold = self.__get_all_axis, self.__generate_all_threshold
         self.__build_tree(inputs, targets, self.root, 1, metric)
@@ -34,7 +34,11 @@ class DT(ABC):
         pass
 
     def __get_all_axis(self):
-        pass
+        """
+        Feature selection function
+        :return: all indexes of input array - a range 0...d-1
+        """
+        return self.__all_dim
 
     @abstractmethod
     def __create_term_value(self, target: np.ndarray) -> Union[np.ndarray, float]:
