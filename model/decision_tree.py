@@ -46,9 +46,8 @@ class DT(ABC):
 
     def __generate_all_threshold(self, inputs: np.ndarray) -> np.ndarray:
         """
-        :param inputs: все элементы обучающей выборки выбранной оси
-        :return: все пороги, количество порогов определяется значением параметра self.max_nb_thresholds
-        Использовать np.min(inputs) и np.max(inputs)
+        :param inputs: all train inputs (just one feature from all of it, array of shape (N, 1))
+        :return: all thresholds - all unique values of this feature
         """
         return np.unique(inputs)
 
