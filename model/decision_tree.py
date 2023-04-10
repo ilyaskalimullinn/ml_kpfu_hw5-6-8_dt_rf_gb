@@ -44,13 +44,13 @@ class DT(ABC):
         """
         pass
 
-    def __generate_all_threshold(self, inputs):
+    def __generate_all_threshold(self, inputs: np.ndarray) -> np.ndarray:
         """
         :param inputs: все элементы обучающей выборки выбранной оси
         :return: все пороги, количество порогов определяется значением параметра self.max_nb_thresholds
         Использовать np.min(inputs) и np.max(inputs)
         """
-        pass
+        return np.unique(inputs)
 
     def __generate_random_threshold(self, inputs):
         """
