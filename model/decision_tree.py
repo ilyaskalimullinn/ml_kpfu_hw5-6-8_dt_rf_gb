@@ -15,9 +15,9 @@ class Node:
 
 class DT(ABC):
 
-    def __init__(self, max_depth, min_entropy=0, min_elem=0):
+    def __init__(self, max_depth, min_metric=0, min_elem=0):
         self.max_depth = max_depth
-        self.min_entropy = min_entropy
+        self.min_metric = min_metric
         self.min_elem = min_elem
         self.root = Node()
 
@@ -74,13 +74,13 @@ class DT(ABC):
         """
         pass
 
-    def __build_splitting_node(self, inputs, targets, entropy, N):
+    def __build_splitting_node(self, inputs, targets, metric, N):
         pass
 
     def __build_tree(self, inputs, targets, node, depth, metric):
 
         N = len(targets)
-        if depth >= self.max_depth or metric <= self.min_entropy or N <= self.min_elem:
+        if depth >= self.max_depth or metric <= self.min_metric or N <= self.min_elem:
             node.terminal_node = self.__create_term_arr(targets)
         else:
 
