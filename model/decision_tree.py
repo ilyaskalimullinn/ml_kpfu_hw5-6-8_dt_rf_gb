@@ -135,10 +135,11 @@ class ClassificationDT(DT):
     @staticmethod
     def __shannon_entropy(targets) -> float:
         """
-                :param targets: классы элементов обучающей выборки, дошедшие до узла
-
-                :return: энтропия
-                np.std(arr)
+                :param targets: train targets that made it to current node
+                :return: entropy
         """
-        pass
+        p = np.unique(targets, return_counts=True)[1]
+        p = p / targets.shape[0]
+        print(p)
+        return -np.sum(p * np.log2(p))
 
