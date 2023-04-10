@@ -108,19 +108,18 @@ class DT(ABC):
 class RegressionDT(DT):
     @staticmethod
     def __calc_metrics(targets: np.ndarray, *args, **kwargs) -> float:
-        return RegressionDT.__disp(targets)
+        return RegressionDT.__variance(targets)
 
     def __create_term_value(self, target: np.ndarray) -> Union[np.ndarray, float]:
         return target.mean()
 
     @staticmethod
-    def __disp(targets: np.ndarray) -> float:
+    def __variance(targets: np.ndarray) -> float:
         """
-        :param targets: классы элементов обучающей выборки, дошедшие до узла
-        :return: дисперсия
-        np.std(arr)
+        :param targets: train targets that made it to current node
+        :return: variance (dispersion)
         """
-        pass
+        return float(np.var(targets))
 
 
 class ClassificationDT(DT):
