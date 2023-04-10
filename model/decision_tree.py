@@ -1,3 +1,6 @@
+import abc
+from abc import abstractmethod, ABC
+
 import numpy as np
 
 
@@ -10,7 +13,7 @@ class Node:
         self.terminal_node = None
 
 
-class DT:
+class DT(ABC):
 
     def __init__(self, max_depth, min_entropy=0, min_elem=0):
         self.max_depth = max_depth
@@ -19,12 +22,12 @@ class DT:
         self.root = Node()
 
     def train(self, inputs, targets):
-        entropy_val = self.__shannon_entropy(targets, len(targets))
+        metric = self.__calc_metrics(targets)
         self.__nb_dim = inputs.shape[1]
         self.__all_dim = np.arange(self.__nb_dim)
 
         self.__get_axis, self.__get_threshold = self.__get_all_axis, self.__generate_all_threshold
-        self.__build_tree(inputs, targets, self.root, 1, entropy_val)
+        self.__build_tree(inputs, targets, self.root, 1, metric)
 
     def __get_random_axis(self):
         pass
@@ -57,26 +60,11 @@ class DT:
         pass
 
     @staticmethod
-    def __disp(targets):
-        """
-        :param targets: классы элементов обучающей выборки, дошедшие до узла
-        :return: дисперсия
-        np.std(arr)
-        """
+    @abstractmethod
+    def __calc_metrics(targets: np.ndarray, *args, **kwargs) -> float:
         pass
 
-    @staticmethod
-    def __shannon_entropy(targets, N):
-        """
-                :param targets: классы элементов обучающей выборки, дошедшие до узла
-                :param N: количество элементов обучающей выборки, дошедшие до узла
-
-                :return: энтропи/
-                np.std(arr)
-        """
-        pass
-
-    def __inf_gain(self, targets_left, targets_right, node_disp, N):
+    def __inf_gain(self, targets_left, targets_right, metric, N):
         """
         :param targets_left: targets для элементов попавших в левый узел
         :param targets_right: targets для элементов попавших в правый узел
@@ -89,15 +77,15 @@ class DT:
     def __build_splitting_node(self, inputs, targets, entropy, N):
         pass
 
-    def __build_tree(self, inputs, targets, node, depth, entropy):
+    def __build_tree(self, inputs, targets, node, depth, metric):
 
         N = len(targets)
-        if depth >= self.max_depth or entropy <= self.min_entropy or N <= self.min_elem:
+        if depth >= self.max_depth or metric <= self.min_entropy or N <= self.min_elem:
             node.terminal_node = self.__create_term_arr(targets)
         else:
 
             ax_max, tay_max, ind_left_max, ind_right_max, disp_left_max, disp_right_max = self.__build_splitting_node(
-                inputs, targets, entropy, N)
+                inputs, targets, metric, N)
             node.split_ind = ax_max
             node.split_val = tay_max
             node.left = Node()
@@ -111,3 +99,36 @@ class DT:
         :return: предсказания целевых значений
         """
         pass
+
+
+class RegressionDT(DT):
+    @staticmethod
+    def __calc_metrics(targets: np.ndarray, *args, **kwargs) -> float:
+        return RegressionDT.__disp(targets)
+
+    @staticmethod
+    def __disp(targets: np.ndarray) -> float:
+        """
+        :param targets: классы элементов обучающей выборки, дошедшие до узла
+        :return: дисперсия
+        np.std(arr)
+        """
+        pass
+
+
+class ClassificationDT(DT):
+
+    @staticmethod
+    def __calc_metrics(targets: np.ndarray, *args, **kwargs) -> float:
+        return ClassificationDT.__shannon_entropy(targets)
+
+    @staticmethod
+    def __shannon_entropy(targets) -> float:
+        """
+                :param targets: классы элементов обучающей выборки, дошедшие до узла
+
+                :return: энтропия
+                np.std(arr)
+        """
+        pass
+
