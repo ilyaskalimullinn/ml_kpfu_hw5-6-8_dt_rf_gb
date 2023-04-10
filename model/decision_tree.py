@@ -40,9 +40,9 @@ class DT(ABC):
         return self.__all_dim
 
     @abstractmethod
-    def __create_term_value(self, target: np.ndarray) -> Union[np.ndarray, float]:
+    def __create_term_value(self, targets: np.ndarray) -> Union[np.ndarray, float]:
         """
-        :param target: target values of train set that have reached this terminal node
+        :param targets: target values of train set that have reached this terminal node
         :return: terminal value (probability array for classification or a float for regression)
         """
         pass
@@ -120,8 +120,8 @@ class RegressionDT(DT):
     def __calc_metrics(targets: np.ndarray, *args, **kwargs) -> float:
         return RegressionDT.__variance(targets)
 
-    def __create_term_value(self, target: np.ndarray) -> Union[np.ndarray, float]:
-        return target.mean()
+    def __create_term_value(self, targets: np.ndarray) -> Union[np.ndarray, float]:
+        return targets.mean()
 
     @staticmethod
     def __variance(targets: np.ndarray) -> float:
@@ -134,13 +134,19 @@ class RegressionDT(DT):
 
 class ClassificationDT(DT):
 
+    def __init__(self, max_depth, number_classes, min_metric=0, min_elem=0):
+        super().__init__(max_depth, min_metric, min_elem)
+        self.K = number_classes
+
     @staticmethod
     def __calc_metrics(targets: np.ndarray, *args, **kwargs) -> float:
         return ClassificationDT.__shannon_entropy(targets)
 
-    def __create_term_value(self, target: np.ndarray) -> Union[np.ndarray, float]:
-        #  todo
-        pass
+    def __create_term_value(self, targets: np.ndarray) -> np.ndarray:
+        y = np.arange(self.K)
+        y[targets] += 1
+        y = y / targets.shape[0]
+        return y
 
     @staticmethod
     def __shannon_entropy(targets) -> float:
