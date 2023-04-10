@@ -151,8 +151,8 @@ class ClassificationDT(DT):
     @staticmethod
     def __shannon_entropy(targets) -> float:
         """
-                :param targets: train targets that made it to current node
-                :return: entropy
+        :param targets: train targets that made it to current node
+        :return: entropy
         """
         p = np.unique(targets, return_counts=True)[1]
         p = p / targets.shape[0]
