@@ -88,8 +88,49 @@ class DT(ABC):
 
         return parent_metric - expected_metric, metric_left, metric_right
 
-    def __build_splitting_node(self, inputs, targets, metric, N):
-        pass
+    def __build_splitting_node(self, inputs: np.ndarray, targets: np.ndarray, metric: float, N: Union[int, None] = None):
+        """
+
+        :param inputs: train inputs that came to this node
+        :param targets: train targets that came to this node
+        :param metric: metric (entropy or variance) for this node
+        :param N: amount of elements that came to this node
+        :return: feature index for feature selection function,
+                threshold for splitting function,
+                indexes for elements that go to the left child node,
+                indexes for elements that go to the right child node,
+                metric value for left node,
+                metric value for right node
+        """
+        if N is None:
+            N = len(targets)
+
+        information_gain_max = 0
+        idx_right_best = None
+        idx_left_best = None
+        metric_left_best = None
+        metric_right_best = None
+        ax_best = None
+        th_best = None
+
+
+        for ax in self.__get_axis():
+            for th in self.__get_threshold(inputs[ax]):
+                idx_right = np.where(inputs[ax], inputs[ax] > th, True, False)
+                idx_left = ~idx_right
+
+                metric_left, metric_right, information_gain = self.__inf_gain(targets[idx_left], targets[idx_right], metric)
+
+                if information_gain > information_gain_max:
+                    ax_best = ax
+                    th_best = th
+                    information_gain_max = information_gain
+                    idx_right_best = idx_right
+                    idx_left_best = idx_left
+                    metric_left_best = metric_left
+                    metric_right_best = metric_right
+
+        return ax_best, th_best, idx_right_best, idx_left_best, metric_left_best, metric_right_best,
 
     def __build_tree(self, inputs, targets, node, depth, metric):
 
@@ -98,10 +139,10 @@ class DT(ABC):
             node.terminal_node = self.__create_term_value(targets)
         else:
 
-            ax_max, tay_max, ind_left_max, ind_right_max, disp_left_max, disp_right_max = self.__build_splitting_node(
+            ax_max, th_max, ind_left_max, ind_right_max, disp_left_max, disp_right_max = self.__build_splitting_node(
                 inputs, targets, metric, N)
             node.split_ind = ax_max
-            node.split_val = tay_max
+            node.split_val = th_max
             node.left = Node()
             node.right = Node()
             self.__build_tree(inputs[ind_left_max], targets[ind_left_max], node.left, depth + 1, disp_left_max)
