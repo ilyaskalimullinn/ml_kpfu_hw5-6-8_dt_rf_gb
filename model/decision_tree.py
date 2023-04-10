@@ -1,5 +1,6 @@
 import abc
 from abc import abstractmethod, ABC
+from typing import Union
 
 import numpy as np
 
@@ -35,11 +36,11 @@ class DT(ABC):
     def __get_all_axis(self):
         pass
 
-    def __create_term_arr(self, target):
+    @abstractmethod
+    def __create_term_value(self, target: np.ndarray) -> Union[np.ndarray, float]:
         """
-        :param target: классы элементов обучающей выборки, дошедшие до узла
-        :return: среднее значение
-        np.mean(target)
+        :param target: target values of train set that have reached this terminal node
+        :return: terminal value (probability array for classification or a float for regression)
         """
         pass
 
@@ -81,7 +82,7 @@ class DT(ABC):
 
         N = len(targets)
         if depth >= self.max_depth or metric <= self.min_metric or N <= self.min_elem:
-            node.terminal_node = self.__create_term_arr(targets)
+            node.terminal_node = self.__create_term_value(targets)
         else:
 
             ax_max, tay_max, ind_left_max, ind_right_max, disp_left_max, disp_right_max = self.__build_splitting_node(
@@ -106,6 +107,9 @@ class RegressionDT(DT):
     def __calc_metrics(targets: np.ndarray, *args, **kwargs) -> float:
         return RegressionDT.__disp(targets)
 
+    def __create_term_value(self, target: np.ndarray) -> Union[np.ndarray, float]:
+        return target.mean()
+
     @staticmethod
     def __disp(targets: np.ndarray) -> float:
         """
@@ -121,6 +125,10 @@ class ClassificationDT(DT):
     @staticmethod
     def __calc_metrics(targets: np.ndarray, *args, **kwargs) -> float:
         return ClassificationDT.__shannon_entropy(targets)
+
+    def __create_term_value(self, target: np.ndarray) -> Union[np.ndarray, float]:
+        #  todo
+        pass
 
     @staticmethod
     def __shannon_entropy(targets) -> float:
