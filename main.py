@@ -43,7 +43,7 @@ def task_regression():
     mse_test = MSE(predictions_test, wine.targets_test)
     mse_valid = MSE(predictions_valid, wine.targets_valid)
 
-    print(f"Valid set mse: {mse_valid}; test set mse: {mse_test}")
+    print(f"Valid set mse: {round(mse_valid, 3)}; test set mse: {round(mse_test, 3)}")
 
 
 if __name__ == '__main__':
