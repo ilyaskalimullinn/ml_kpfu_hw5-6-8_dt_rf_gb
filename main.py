@@ -34,7 +34,7 @@ def task_regression():
     print("REGRESSION: ")
 
     wine = WineDataset(cfg)
-    model = RegressionDT(10)
+    model = RegressionDT(10, 0.3, 5)
     model.train(wine.inputs_train, wine.targets_train)
 
     predictions_test = model.get_predictions(wine.inputs_test)
@@ -49,6 +49,6 @@ def task_regression():
 if __name__ == '__main__':
     np.random.seed(2000)
 
-    # task_classification()
+    task_classification()
     task_regression()
 
