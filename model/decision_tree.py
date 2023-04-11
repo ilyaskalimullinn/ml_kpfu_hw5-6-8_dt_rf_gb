@@ -184,7 +184,10 @@ class RegressionDT(DT):
         :param targets: train targets that made it to current node
         :return: variance (dispersion)
         """
-        return float(np.var(targets))
+        if len(targets) == 0:
+            return 0
+        var = float(np.var(targets))
+        return var
 
 
 class ClassificationDT(DT):
