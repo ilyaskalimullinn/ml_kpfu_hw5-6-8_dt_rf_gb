@@ -1,12 +1,15 @@
 import numpy as np
 
-from metrics.metrics import accuracy, confusion_matrix
+from datasets.wine_dataset import WineDataset
+from metrics.metrics import accuracy, confusion_matrix, MSE
 from model.decision_tree import ClassificationDT, RegressionDT
 from datasets.digits_dataset import Digits
 from config.decision_tree_config import cfg
 
 
 def task_classification():
+    print("CLASSIFICATION")
+
     model = ClassificationDT(10, 10)
     digits = Digits(cfg)
 
@@ -28,11 +31,24 @@ def task_classification():
 
 
 def task_regression():
-    pass
+    print("REGRESSION: ")
+
+    wine = WineDataset(cfg)
+    model = RegressionDT(10)
+    model.train(wine.inputs_train, wine.targets_train)
+
+    predictions_test = model.get_predictions(wine.inputs_test)
+    predictions_valid = model.get_predictions(wine.inputs_valid)
+
+    mse_test = MSE(predictions_test, wine.targets_test)
+    mse_valid = MSE(predictions_valid, wine.targets_valid)
+
+    print(f"Valid set mse: {mse_valid}; test set mse: {mse_test}")
 
 
 if __name__ == '__main__':
     np.random.seed(2000)
 
-    task_classification()
+    # task_classification()
+    task_regression()
 
