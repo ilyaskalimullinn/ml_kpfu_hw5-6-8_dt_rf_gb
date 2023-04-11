@@ -202,6 +202,12 @@ class ClassificationDT(DT):
         y = y / len(targets)
         return y
 
+    def get_predictions(self, inputs: np.ndarray, return_probability_vector: bool = True) -> np.ndarray:
+        predictions = super().get_predictions(inputs)
+        if return_probability_vector:
+            return predictions
+        return predictions.argmax(axis=1)
+
     @staticmethod
     def __shannon_entropy(targets) -> float:
         """
