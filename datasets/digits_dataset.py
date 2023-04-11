@@ -28,6 +28,8 @@ class Digits(BaseClassificationDataset):
             self.standardization()
         elif cfg.data_preprocess_type.value == DataProcessTypes.normalization.value:
             self.normalization()
+        elif cfg.data_preprocess_type.value == DataProcessTypes.no_preprocess.value:
+            pass
         else:
             raise Exception('No such preprocessing function!')
 
