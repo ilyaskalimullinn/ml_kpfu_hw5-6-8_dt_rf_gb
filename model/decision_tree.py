@@ -40,7 +40,7 @@ class DT(ABC):
         :return: indexes of features selected randomly from 0, ..., d-1
         Length of return vector equals max_nb_dim_to_check
         """
-        return np.random.choice(self.__get_axis(), size=self.max_nb_dim_to_check)
+        return np.random.choice(self.__get_all_axis(), size=self.max_nb_dim_to_check)
 
     def __get_all_axis(self):
         """
@@ -201,7 +201,7 @@ class RegressionDT(DT):
 
 class ClassificationDT(DT):
 
-    def __init__(self, max_depth, number_classes, min_metric=0, min_elem=1):
+    def __init__(self, max_depth, number_classes, min_metric=1e-4, min_elem=1):
         super().__init__(max_depth, min_metric, min_elem)
         self.K = number_classes
 
