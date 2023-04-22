@@ -1,12 +1,17 @@
+import os
+
 import numpy as np
 
 from config.decision_tree_config import cfg
 from datasets.digits_dataset import Digits
-from metrics.metrics import accuracy
+from metrics.metrics import accuracy, confusion_matrix
 from model.random_forest import ClassificationRandomForest
+from utils.visualisation import Visualisation
+
 
 if __name__ == "__main__":
-    FOREST_AMOUNT = 5
+    FOREST_AMOUNT = 30
+    BEST_MODELS_AMOUNT = 10
     # L1 - max number of dimensions
     MIN_L1 = 1
     MAX_L1 = 10
@@ -22,6 +27,9 @@ if __name__ == "__main__":
     MIN_ELEMENTS_TERMINAL_NODE = 5
     MIN_ENTROPY = 0
     CLASSES_AMOUNT = 10
+
+    # params not related to the model
+    GRAPHS_DIR = os.path.normpath(os.path.join(os.path.abspath(os.path.curdir), "../graphs"))
 
     dataset = Digits(cfg)
 
@@ -47,4 +55,20 @@ if __name__ == "__main__":
             "L_2": L_2
         })
 
-    print(experiments)
+    experiments.sort(key=lambda x: x["accuracy_valid"])
+
+    for experiment in experiments[:BEST_MODELS_AMOUNT]:
+        model = experiment["model"]
+        experiment["accuracy_test"] = accuracy(
+            model.get_prediction(dataset.inputs_test, return_probability_vector=False), dataset.targets_test
+        )
+
+    visualisation = Visualisation(graphs_dir=GRAPHS_DIR)
+
+    visualisation.visualize_best_models(experiments[:BEST_MODELS_AMOUNT], file_name="best_models.html")
+
+    best_model = experiments[0]["model"]
+    conf_matrix = confusion_matrix(best_model.get_prediction(dataset.inputs_test, return_probability_vector=False),
+                                   dataset.targets_test, dataset.k)
+
+    visualisation.visualize_confusion_matrix(conf_matrix, file_name="confusion_matrix.html")
