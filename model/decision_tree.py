@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Union
+from typing import Union, Optional
 
 import numpy as np
 
@@ -21,16 +21,26 @@ class DT(ABC):
         self.min_elem = min_elem
         self.root = Node()
 
-    def train(self, inputs, targets):
+    def train(self, inputs, targets, random_mode: Optional[tuple] = None):
         metric = self._calc_metrics(targets)
         self.D = inputs.shape[1]
         self.__all_dim = np.arange(self.D)
 
-        self.__get_axis, self.__get_threshold = self.__get_all_axis, self.__generate_all_threshold
+        if random_mode:
+            self.max_nb_dim_to_check, self.max_nb_thresholds = random_mode[0], random_mode[1]  # L_1, L_2
+            self.__get_axis, self.__get_threshold = self.__get_random_axis, self.__generate_random_threshold
+        else:
+            self.__get_axis, self.__get_threshold = self.__get_all_axis, self.__generate_all_threshold
+
         self.__build_tree(inputs, targets, self.root, 1, metric)
 
     def __get_random_axis(self):
-        pass
+        """
+        Feature selection function
+        :return: indexes of features selected randomly from 0, ..., d-1
+        Length of return vector equals max_nb_dim_to_check
+        """
+        return np.random.choice(self.__get_axis(), size=self.max_nb_dim_to_check)
 
     def __get_all_axis(self):
         """
@@ -56,11 +66,11 @@ class DT(ABC):
 
     def __generate_random_threshold(self, inputs):
         """
-        :param inputs: все элементы обучающей выборки(дошедшие до узла) выбранной оси
-        :return: пороги, выбранные с помощью равномерного распределения.
-        Количество порогов определяется значением параметра self.max_nb_thresholds
+        :param inputs: train inputs that came to this node, just one selected feature
+        :return: thresholds selected randomly from unique values of these inputs (feature values)
+        Amount of thresholds equals self.max_nb_thresholds
         """
-        pass
+        return np.random.choice(self.__generate_all_threshold(inputs), self.max_nb_thresholds)
 
     @staticmethod
     @abstractmethod
@@ -114,7 +124,6 @@ class DT(ABC):
         metric_right_best = None
         ax_best = None
         th_best = None
-
 
         for ax in self.__get_axis():
             for th in self.__get_threshold(inputs[:, ax]):
