@@ -211,7 +211,7 @@ class ClassificationDT(DT):
 
     def _create_term_value(self, targets: np.ndarray) -> np.ndarray:
         y = np.bincount(targets, minlength=self.K)
-        y = y / len(targets)
+        y = y / targets.shape[0]
         return y
 
     def get_predictions(self, inputs: np.ndarray, return_probability_vector: bool = True) -> np.ndarray:
