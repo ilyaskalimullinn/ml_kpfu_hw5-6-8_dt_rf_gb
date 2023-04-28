@@ -32,7 +32,7 @@ class DT(ABC):
         else:
             self.__get_axis, self.__get_threshold = self.__get_all_axis, self.__generate_all_threshold
 
-        self.__build_tree(inputs, targets, self.root, 1, metric)
+        self.__build_tree(inputs, targets, self.root, 0, metric)
 
     def __get_random_axis(self):
         """
