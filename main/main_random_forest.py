@@ -22,9 +22,9 @@ def visualize_experiments(experiments, best_experiments_amount, bagging=False):
 
     visualisation = Visualisation(graphs_dir=GRAPHS_DIR)
 
-    visualisation.visualize_best_models(experiments[:best_experiments_amount],
-                                        title=f"Best {best_experiments_amount} models, {training_type}",
-                                        file_name=f"best_models_{training_type}.html", bagging=bagging)
+    visualisation.visualize_best_rf_models(experiments[:best_experiments_amount],
+                                           title=f"Best {best_experiments_amount} models, {training_type}",
+                                           file_name=f"best_models_{training_type}.html", bagging=bagging)
 
     best_model = experiments[0]["model"]
     conf_matrix = confusion_matrix(best_model.get_prediction(dataset.inputs_test, return_probability_vector=False),

@@ -9,7 +9,7 @@ class Visualisation:
     def __init__(self, graphs_dir):
         self.graphs_dir = graphs_dir
 
-    def visualize_best_models(self, experiments, rounding=3, title='Лучшие модели Random Forest', file_name=None, bagging=False):
+    def visualize_best_rf_models(self, experiments, rounding=3, title='Лучшие модели Random Forest', file_name=None, bagging=False):
         if bagging:
             df = pd.DataFrame({
                 "accuracy_valid": [round(exp["accuracy_valid"], rounding) for exp in experiments],
