@@ -79,3 +79,39 @@ class Visualisation:
 
         if file_name:
             fig.write_html(os.path.join(self.graphs_dir, file_name))
+
+    def visualize_best_gradient_boosting_models(self, experiments, rounding=3,
+                                                title='Best gradient boosted decision trees (regression)',
+                                                file_name=None):
+        df = pd.DataFrame({
+            "valid_mse": [round(exp["valid_mse"], rounding) for exp in experiments],
+            "test_mse": [round(exp["test_mse"], rounding) for exp in experiments],
+            "M": [round(exp["weak_learners_amount"], rounding) for exp in experiments],
+            "learning_rate": [round(exp["learning_rate"], rounding) for exp in experiments]
+        })
+
+        df["model_params"] = "M=" + df["M"].astype(str) + ";learning_rate=" + df["learning_rate"].astype(str)
+
+        fig = px.line(data_frame=df,
+                      x='model_params',
+                      y='valid_mse',
+                      hover_data={
+                          "model_params": False,
+                          "M": True,
+                          "learning_rate": True,
+                          "valid_mse": True,
+                          "test_mse": True
+                      })
+
+        fig.update_layout(
+            title=title,
+            xaxis_title="Параметры модели",
+            yaxis_title="Ошибка на валидационной выборке",
+            legend_title="Legend",
+            font_size=14
+        )
+
+        fig.show()
+
+        if file_name:
+            fig.write_html(os.path.join(self.graphs_dir, file_name))
